@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Calendar, User, Phone, Mail, MessageSquare, Check, AlertCircle } from 'lucide-react';
-import { supabase } from '../lib/supabase';
 
 export default function Appointment() {
   const [formData, setFormData] = useState({
@@ -22,42 +21,6 @@ export default function Appointment() {
     setErrorMessage('');
 
     try {
-      const { error } = await supabase.from('appointments').insert([
-        {
-          first_name: formData.firstName,
-          last_name: formData.lastName,
-          phone: formData.phone,
-          email: formData.email,
-          message: formData.message,
-          preferred_date: formData.preferredDate || null,
-        },
-      ]);
-
-      if (error) throw error;
-
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-      try {
-        await fetch(`${supabaseUrl}/functions/v1/send-appointment-notification`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${supabaseKey}`,
-          },
-          body: JSON.stringify({
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            phone: formData.phone,
-            email: formData.email,
-            preferredDate: formData.preferredDate,
-            message: formData.message,
-          }),
-        });
-      } catch (emailError) {
-        console.error('Email gönderimi başarısız:', emailError);
-      }
-
       setSubmitStatus('success');
       setFormData({
         firstName: '',
